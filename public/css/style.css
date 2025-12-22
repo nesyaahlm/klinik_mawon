@@ -1,0 +1,505 @@
+:root {
+    --primary: #2E86DE;
+    --background: #f5f9ff;
+    --text: #1f2937;
+    --gray: #6b7280;
+}
+
+/* ------------------ Global ------------------ */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: 'Open Sans', sans-serif;
+    background: #E9F5FF;
+    color: var(--text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ------------------ Header & Navbar ------------------ */
+header {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 4px;
+}
+
+header h1 {
+    color: var(--primary);
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.navbar {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.navbar .container {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.logo img {
+    height: 30px;
+    width: auto;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--primary);
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.nav-links a:hover {
+    color: #165EA8;
+}
+/* ======================= HOME SECTION FIX ======================= */
+
+/* ------------------ Hero Section ------------------ */
+.hero-section {
+    width: 100%;
+    padding: 100px 20px 80px 20px;
+    background: linear-gradient(135deg, #E8F2FF 0%, #ffffff 100%);
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+    gap: 50px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.hero-text h2 {
+    font-size: 48px;
+    font-weight: 800;
+    color: #165EA8;
+    line-height: 1.2;
+}
+
+.hero-text h2 span {
+    color: var(--primary);
+}
+
+.hero-text p {
+    font-size: 18px;
+    margin-top: 12px;
+    color: #1F4F7B;
+}
+
+.hero-btn {
+    display: inline-block;
+    margin-top: 20px;
+    background: var(--primary);
+    color: #fff;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.hero-btn:hover {
+    background: #1557A0;
+    transform: translateY(-3px);
+}
+
+.hero-img img {
+    width: 100%;
+    max-width: 450px;
+    object-fit: contain; /* tetap proporsional */
+    filter: drop-shadow(3px 10px 18px rgba(0,0,0,0.12));
+    animation: float 4s ease-in-out infinite;
+}
+
+/* ------------------ Banner Slider ------------------ */
+.banner-section {
+    width: 100%;
+    margin: 50px 0;
+    overflow: hidden;
+}
+
+.banner-container {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-radius: 16px;
+}
+
+.banner-item {
+    width: 100%;
+    position: absolute;
+    opacity: 0;
+    transition: all 0.6s ease-in-out;
+}
+
+.banner-item.active {
+    opacity: 1;
+}
+
+.banner-item img {
+    width: 100%;
+    height: auto;  /* ukuran asli tetap proporsional */
+    object-fit: contain; /* agar tidak terpotong */
+    display: block;
+    margin: 0 auto;
+    border-radius: 16px;
+}
+
+/* ------------------ Features Section ------------------ */
+.features-section {
+    padding: 60px 20px;
+    text-align: center;
+    background: #ffffff;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #165EA8;
+    margin-bottom: 40px;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* minimal 280px agar tidak kecil */
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: #E9F5FF;
+    padding: 30px 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(46,134,222,0.2);
+}
+
+.feature-card img {
+    width: 100%;
+    max-width: 200px; /* ukurannya sama rata */
+    height: 200px;    /* tinggi fix agar seragam */
+    object-fit: cover; /* crop gambar jika terlalu besar */
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.feature-card h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1557A0;
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: #4b5563;
+}
+
+/* ------------------ Health Campaign ------------------ */
+.campaign-section {
+    padding: 80px 20px;
+    background: #E9F5FF;
+}
+
+.campaign-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.campaign-text h3 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1557A0;
+}
+
+.campaign-text p {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #1F4F7B;
+    line-height: 1.6;
+}
+
+/* ------------------ Contact Section ------------------ */
+.contact-wrapper {
+    width: 100%;
+    padding: 60px 20px;
+    background: #F4F9FF;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+    max-width: 950px;
+    margin: 0 auto;
+}
+
+.contact-box,
+.contact-center {
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0px 4px 16px rgba(0,0,0,0.08);
+    border-left: 5px solid var(--primary);
+    transition: 0.3s ease;
+}
+
+.contact-box:hover,
+.contact-center:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 14px 30px rgba(46,134,222,0.25);
+}
+
+.contact-box h4,
+.contact-center h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1557A0;
+    margin-bottom: 15px;
+}
+
+.contact-box ul li,
+.contact-center p {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 8px;
+}
+
+.tulisan {
+    font-weight: 500;
+}
+
+/* ------------------ Responsiveness ------------------ */
+@media screen and (max-width: 992px) {
+    .hero-grid,
+    .campaign-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .campaign-img img,
+    .hero-img img {
+        margin: 20px auto 0 auto;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .banner-container {
+        height: auto;
+    }
+
+    .banner-item img {
+        height: auto;
+    }
+}
+
+
+/* ------------------ Doctor Cards ------------------ */
+.doctor-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.doctor-card {
+    display: block;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    text-decoration: none;
+    color: inherit;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.doctor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.doctor-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 10px;
+}
+
+/* ------------------ Contact Section ------------------ */
+.contact-wrapper {
+    width: 100%;
+    padding: 60px 0;
+    background: #F4F9FF;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+    max-width: 950px;
+}
+
+.contact-box,
+.contact-center {
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0px 4px 16px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+    border-left: 5px solid var(--primary);
+}
+
+.contact-box:hover,
+.contact-center:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 14px 30px rgba(46,134,222,0.25);
+}
+
+/* ------------------ Footer ------------------ */
+.footer {
+    background: var(--primary);
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: -31px;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* ------------------ Buttons ------------------ */
+.btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1d6cc9;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+/* ------------------ Profile Menu ------------------ */
+.profile-menu {
+    position: relative;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.profile-name {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 28px;
+    background: white;
+    min-width: 160px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 999;
+}
+
+.profile-dropdown a {
+    display: block;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+
+.profile-menu:hover .profile-dropdown {
+    display: block;
+}
