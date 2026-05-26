@@ -100,3 +100,39 @@ $routes->get('dokter/delete/(:num)', 'Admin\Doctors::delete/$1');
     });
 
 });
+
+// api admin doctor
+$routes->group('api', function($routes){
+    $routes->get('admin_doctor', 'Api\AdminDoctor::index');
+    $routes->get('admin_doctor/(:num)', 'Api\AdminDoctor::show/$1');
+    $routes->post('admin_doctor', 'Api\AdminDoctor::create');
+    $routes->put('admin_doctor/(:num)', 'Api\AdminDoctor::update/$1');
+    $routes->delete('admin_doctor/(:num)', 'Api\AdminDoctor::delete/$1');
+});
+// api appoinment
+$routes->group('api', function($routes){
+    $routes->get('appointment', 'Api\Appointment::index');
+    $routes->get('appointment/(:num)', 'Api\Appointment::show/$1');
+    $routes->post('appointment', 'Api\Appointment::create');
+    $routes->put('appointment/(:num)', 'Api\Appointment::update/$1');
+    $routes->delete('appointment/(:num)', 'Api\Appointment::delete/$1');
+});
+// api dashboard
+$routes->group('api', function($routes){
+    $routes->get('dashboard', 'Api\Dashboard::index');
+});
+// api doctors
+$routes->group('api', function($routes){
+    $routes->get('doctors', 'Api\Doctors::index');
+    $routes->get('doctors/(:num)', 'Api\Doctors::show/$1');
+    $routes->post('doctors', 'Api\Doctors::create');
+    $routes->post('doctors/update/(:num)', 'Api\Doctors::update/$1');
+    $routes->delete('doctors/(:num)', 'Api\Doctors::delete/$1');
+});
+// api kontak
+$routes->group('api', function($routes){
+    $routes->get('kontak', 'Api\Kontak::index');
+    $routes->get('kontak/(:num)', 'Api\Kontak::show/$1');
+    $routes->post('kontak', 'Api\Kontak::create');
+    $routes->delete('kontak/(:num)', 'Api\Kontak::delete/$1');
+});
