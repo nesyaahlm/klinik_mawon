@@ -3,14 +3,12 @@
 namespace App\Controllers;
 
 use App\Models\KontakModel;
-
 class Contact extends BaseController
 {
     public function index()
     {
         return view('contact');
     }
-
     public function send()
     {
         $model = new KontakModel();
