@@ -14,6 +14,7 @@ class AppointmentModel extends Model
         'doctor_id',
         'date',
         'time',
+        'keluhan',
         'no_antrian',
         'status',
         'created_at',
