@@ -59,6 +59,7 @@ class AdminDoctor extends RestfullController
         if (!$doctor) {
             return $this->responseHasil(404, false, 'Data dokter tidak ditemukan');
         }
+
         $input = $this->request->getRawInput();
         $data = [
             'name' => $input['name'] ?? $doctor['name'],
