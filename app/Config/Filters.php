@@ -3,6 +3,7 @@
 namespace Config;
 
 use App\Filters\LoginFilter;
+use App\Filters\ApiAuthFilter;
 use App\Filters\PermissionFilter;
 use App\Filters\RoleFilter;
 use CodeIgniter\Config\BaseConfig;
@@ -29,6 +30,7 @@ class Filters extends BaseConfig
         'login' => LoginFilter::class,
         'permission' => PermissionFilter::class,
         'role' => RoleFilter::class,
+        'apiAuth' => ApiAuthFilter::class,
     ];
 
     public array $globals = [

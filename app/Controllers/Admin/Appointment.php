@@ -1,19 +1,26 @@
 <?php
 
-namespace App\Controllers\Admin;
+namespace App\Controllers\Api;
 
-use App\Controllers\BaseController;
+use App\Controllers\RestfullController;
 use App\Models\AppointmentModel;
 use App\Models\QueueModel;
-use App\Models\UserModel;
 
-class Appointment extends BaseController
+class Appointment extends RestfullController
 {
+    protected $appointmentModel;
+    protected $queueModel;
+
+    public function __construct()
+    {
+        $this->appointmentModel = new AppointmentModel();
+        $this->queueModel       = new QueueModel();
+    }
+
+    // GET ALL DATA
     public function index()
     {
-        $appointmentModel = new AppointmentModel();
-
-        $data['appointments'] = $appointmentModel
+        $appointments = $this->appointmentModel
             ->select('appointments.*, 
                       users.username, 
                       doctors.name AS doctor_name,
@@ -24,57 +31,56 @@ class Appointment extends BaseController
             ->orderBy('appointments.id', 'ASC')
             ->findAll();
 
-        return view('admin/appointment/index', $data);
+        return $this->responseHasil(200, true, $appointments);
     }
 
+    // GET DETAIL DATA
+    public function show($id = null)
+    {
+        $appointment = $this->appointmentModel
+            ->select('appointments.*, 
+                      users.username, 
+                      doctors.name AS doctor_name,
+                      payments.proof')
+            ->join('users', 'users.id = appointments.user_id', 'left')
+            ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
+            ->join('payments', 'payments.appointment_id = appointments.id', 'left')
+            ->where('appointments.id', $id)
+            ->first();
+
+        if (!$appointment) {
+            return $this->responseHasil(404, false, 'Appointment tidak ditemukan');
+        }
+
+        return $this->responseHasil(200, true, $appointment);
+    }
+
+    // POST DATA
     public function create()
     {
-        $userModel   = new \App\Models\UserModel();
-        $doctorModel = new \App\Models\DoctorModel();
+        $input = $this->request->getJSON(true);
 
-        return view('admin/appointment/create', [
-            'users'   => $userModel->asArray()->findAll(),
-            'doctors' => $doctorModel->findAll()
-        ]);
+        $data = [
+            'user_id'   => $input['user_id'] ?? null,
+            'doctor_id' => $input['doctor_id'] ?? null,
+            'date'      => $input['date'] ?? null,
+            'time'      => $input['time'] ?? null,
+            'status'    => $input['status'] ?? 'pending',
+        ];
+
+        $this->appointmentModel->insert($data);
+
+        return $this->responseHasil(201, true, 'Appointment berhasil ditambahkan');
     }
 
-    public function store()
-    {
-        $appointmentModel = new AppointmentModel();
-
-        $appointmentModel->save([
-            'user_id'   => $this->request->getPost('user_id'),
-            'doctor_id' => $this->request->getPost('doctor_id'),
-            'date'      => $this->request->getPost('date'),
-            'time'      => $this->request->getPost('time'),
-            'status'    => $this->request->getPost('status'),
-        ]);
-
-        return redirect()->to('/admin/appointment')->with('success', 'Data berhasil disimpan');
-    }
-
-    public function edit($id)
-    {
-        $appointmentModel = new AppointmentModel();
-        $userModel        = new \App\Models\UserModel();
-        $doctorModel      = new \App\Models\DoctorModel();
-
-        return view('admin/appointment/edit', [
-            'appointment' => $appointmentModel->find($id),
-            'users'       => $userModel->asArray()->findAll(),
-            'doctors'     => $doctorModel->findAll()
-        ]);
-    }
-
-    public function update($id)
+    // UPDATE DATA
+    public function update($id = null)
     {
         $appointmentModel = new AppointmentModel();
         $queueModel       = new QueueModel();
 
-        // ambil data lama
         $appointment = $appointmentModel->find($id);
 
-        // update dasar
         $appointmentModel->update($id, [
             'user_id'   => $this->request->getPost('user_id'),
             'doctor_id' => $this->request->getPost('doctor_id'),
@@ -83,36 +89,44 @@ class Appointment extends BaseController
             'status'    => $this->request->getPost('status'),
         ]);
 
-        $newStatus = $this->request->getPost('status');
+        $newStatus = $data['status'];
 
-        if (($newStatus === 'confirmed' || $newStatus === 'done') && $appointment['no_antrian'] == null) {
+        // AUTO NOMOR ANTRIAN
+        if (($newStatus === 'confirmed' || $newStatus === 'done')
+            && $appointment['no_antrian'] == null) {
 
-            $last = $appointmentModel
+            $last = $this->appointmentModel
                 ->where('date', $appointment['date'])
                 ->selectMax('no_antrian')
                 ->first();
 
             $queueNumber = ($last['no_antrian'] ?? 0) + 1;
 
-            $appointmentModel->update($id, [
+            $this->appointmentModel->update($id, [
                 'no_antrian' => $queueNumber
             ]);
 
-            $queueModel->insert([
+            $this->queueModel->insert([
                 'patient_name' => $appointment['patient_name'] ?? 'Pasien',
                 'service'      => 'Konsultasi',
                 'queue_number' => $queueNumber
             ]);
         }
 
-        return redirect()->to('/admin/appointment')->with('success', 'Data berhasil diupdate');
+        return $this->responseHasil(200, true, 'Appointment berhasil diupdate');
     }
 
-    public function delete($id)
+    // DELETE DATA
+    public function delete($id = null)
     {
-        $appointmentModel = new AppointmentModel();
-        $appointmentModel->delete($id);
+        $appointment = $this->appointmentModel->find($id);
 
-        return redirect()->to('/admin/appointment')->with('success', 'Data berhasil dihapus');
+        if (!$appointment) {
+            return $this->responseHasil(404, false, 'Appointment tidak ditemukan');
+        }
+
+        $this->appointmentModel->delete($id);
+
+        return $this->responseHasil(200, true, 'Appointment berhasil dihapus');
     }
 }
