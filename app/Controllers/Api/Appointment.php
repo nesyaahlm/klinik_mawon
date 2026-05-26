@@ -17,7 +17,7 @@ class Appointment extends RestfullController
         $this->queueModel       = new QueueModel();
     }
 
-    // GET ALL DATA
+    // GET ALL APPOINTMENT
     public function index()
     {
         $appointments = $this->appointmentModel
@@ -34,7 +34,7 @@ class Appointment extends RestfullController
         return $this->responseHasil(200, true, $appointments);
     }
 
-    // GET DETAIL DATA
+    // GET DETAIL APPOINTMENT
     public function show($id = null)
     {
         $appointment = $this->appointmentModel
@@ -55,7 +55,7 @@ class Appointment extends RestfullController
         return $this->responseHasil(200, true, $appointment);
     }
 
-    // POST DATA
+    // CREATE APPOINTMENT
     public function create()
     {
         $input = $this->request->getJSON(true);
@@ -73,7 +73,7 @@ class Appointment extends RestfullController
         return $this->responseHasil(201, true, 'Appointment berhasil ditambahkan');
     }
 
-    // UPDATE DATA
+    // UPDATE APPOINTMENT
     public function update($id = null)
     {
         $appointment = $this->appointmentModel->find($id);
@@ -97,7 +97,7 @@ class Appointment extends RestfullController
         $newStatus = $data['status'];
 
         // AUTO NOMOR ANTRIAN
-        if (($newStatus === 'confirmed' || $newStatus === 'done')
+        if (($newStatus === 'confirmed' || $newStatus === 'done') 
             && $appointment['no_antrian'] == null) {
 
             $last = $this->appointmentModel
@@ -121,7 +121,7 @@ class Appointment extends RestfullController
         return $this->responseHasil(200, true, 'Appointment berhasil diupdate');
     }
 
-    // DELETE DATA
+    // DELETE APPOINTMENT
     public function delete($id = null)
     {
         $appointment = $this->appointmentModel->find($id);

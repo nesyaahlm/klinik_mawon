@@ -100,28 +100,3 @@ $routes->get('dokter/delete/(:num)', 'Admin\Doctors::delete/$1');
     });
 
 });
-
-// Flutter REST API. Web routes above remain session-based and unchanged.
-$routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) {
-    $routes->post('auth/register', 'AuthController::register');
-    $routes->post('auth/login', 'AuthController::login');
-
-    $routes->get('doctors', 'DoctorController::index');
-    $routes->get('doctors/(:num)', 'DoctorController::show/$1');
-    $routes->get('doctors/(:num)/schedules', 'DoctorController::schedules/$1');
-
-    $routes->group('', ['filter' => 'apiAuth'], function($routes) {
-        $routes->post('auth/logout', 'AuthController::logout');
-
-        $routes->get('profile', 'ProfileController::show');
-        $routes->put('profile', 'ProfileController::update');
-
-        $routes->post('appointments', 'AppointmentController::create');
-        $routes->get('appointments', 'AppointmentController::index');
-        $routes->get('appointments/(:num)', 'AppointmentController::show/$1');
-        $routes->patch('appointments/(:num)/cancel', 'AppointmentController::cancel/$1');
-        $routes->get('appointments/(:num)/queue', 'AppointmentController::queue/$1');
-    });
-
-    $routes->add('(:any)', 'ErrorController::notFound');
-});
