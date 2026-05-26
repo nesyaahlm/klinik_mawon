@@ -71,8 +71,10 @@ class Appointment extends BaseController
         $appointmentModel = new AppointmentModel();
         $queueModel       = new QueueModel();
 
+        // ambil data lama
         $appointment = $appointmentModel->find($id);
 
+        // update dasar
         $appointmentModel->update($id, [
             'user_id'   => $this->request->getPost('user_id'),
             'doctor_id' => $this->request->getPost('doctor_id'),
