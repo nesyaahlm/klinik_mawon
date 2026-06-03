@@ -34,7 +34,7 @@ class Appointment extends RestfullController
         return $this->responseHasil(200, true, $appointments);
     }
 
-    // GET DETAIL DATA
+
     public function show($id = null)
     {
         $appointment = $this->appointmentModel
