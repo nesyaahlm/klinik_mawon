@@ -51,7 +51,6 @@ class AdminDoctor extends RestfullController
         return $this->responseHasil(201, true, 'Dokter berhasil ditambahkan');
     }
 
-    // UPDATE DATA
     public function update($id = null)
     {
         $doctor = $this->doctorModel->find($id);

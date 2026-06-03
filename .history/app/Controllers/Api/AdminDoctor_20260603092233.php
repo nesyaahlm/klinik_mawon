@@ -51,7 +51,6 @@ class AdminDoctor extends RestfullController
         return $this->responseHasil(201, true, 'Dokter berhasil ditambahkan');
     }
 
-    // UPDATE DATA
     public function update($id = null)
     {
         $doctor = $this->doctorModel->find($id);
@@ -59,7 +58,6 @@ class AdminDoctor extends RestfullController
         if (!$doctor) {
             return $this->responseHasil(404, false, 'Data dokter tidak ditemukan');
         }
-
         $input = $this->request->getRawInput();
         $data = [
             'name' => $input['name'] ?? $doctor['name'],
