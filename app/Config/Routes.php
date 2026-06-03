@@ -103,6 +103,16 @@ $routes->get('dokter/delete/(:num)', 'Admin\Doctors::delete/$1');
 
 // api admin doctor
 $routes->group('api', function($routes){
+    $routes->options('(:any)', static function() {
+        return service('response')->setStatusCode(204);
+    });
+    $routes->post('login', 'Api\Auth::login');
+    $routes->post('register', 'Api\Auth::register');
+    $routes->post('logout', 'Api\Auth::logout');
+    $routes->get('profile', 'Api\Auth::profile');
+});
+
+$routes->group('api', function($routes){
     $routes->get('admin_doctor', 'Api\AdminDoctor::index');
     $routes->get('admin_doctor/(:num)', 'Api\AdminDoctor::show/$1');
     $routes->post('admin_doctor', 'Api\AdminDoctor::create');

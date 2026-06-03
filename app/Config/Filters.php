@@ -3,6 +3,7 @@
 namespace Config;
 
 use App\Filters\LoginFilter;
+use App\Filters\ApiCorsFilter;
 use App\Filters\PermissionFilter;
 use App\Filters\RoleFilter;
 use CodeIgniter\Config\BaseConfig;
@@ -26,6 +27,7 @@ class Filters extends BaseConfig
         'performance' => PerformanceMetrics::class,
 
         // Myth/Auth
+        'apiCors' => ApiCorsFilter::class,
         'login' => LoginFilter::class,
         'permission' => PermissionFilter::class,
         'role' => RoleFilter::class,
@@ -42,5 +44,10 @@ class Filters extends BaseConfig
 
     public array $methods = [];
 
-    public array $filters = [];
+    public array $filters = [
+        'apiCors' => [
+            'before' => ['api/*'],
+            'after' => ['api/*'],
+        ],
+    ];
 }
