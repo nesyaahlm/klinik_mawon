@@ -34,7 +34,7 @@ class Appointment extends RestfullController
         return $this->responseHasil(200, true, $appointments);
     }
 
-    // GET DETAIL DATA
+
     public function show($id = null)
     {
         $appointment = $this->appointmentModel
@@ -76,23 +76,18 @@ class Appointment extends RestfullController
     // UPDATE DATA
     public function update($id = null)
     {
-        $appointment = $this->appointmentModel->find($id);
+        $appointmentModel = new AppointmentModel();
+        $queueModel       = new QueueModel();
 
-        if (!$appointment) {
-            return $this->responseHasil(404, false, 'Appointment tidak ditemukan');
-        }
+        $appointment = $appointmentModel->find($id);
 
-        $input = $this->request->getJSON(true);
-
-        $data = [
-            'user_id'   => $input['user_id'] ?? $appointment['user_id'],
-            'doctor_id' => $input['doctor_id'] ?? $appointment['doctor_id'],
-            'date'      => $input['date'] ?? $appointment['date'],
-            'time'      => $input['time'] ?? $appointment['time'],
-            'status'    => $input['status'] ?? $appointment['status'],
-        ];
-
-        $this->appointmentModel->update($id, $data);
+        $appointmentModel->update($id, [
+            'user_id'   => $this->request->getPost('user_id'),
+            'doctor_id' => $this->request->getPost('doctor_id'),
+            'date'      => $this->request->getPost('date'),
+            'time'      => $this->request->getPost('time'),
+            'status'    => $this->request->getPost('status'),
+        ]);
 
         $newStatus = $data['status'];
 
