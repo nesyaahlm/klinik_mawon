@@ -137,11 +137,6 @@ $routes->group('api', function($routes){
     $routes->delete('bookings/(:num)', 'Api\Appointment::delete/$1');
 });
 
-// api payments alias untuk mobile
-$routes->group('api', function($routes){
-    $routes->post('payments', 'Api\Payment::create');
-});
-
 // api dashboard
 $routes->group('api', function($routes){
     $routes->get('dashboard', 'Api\Dashboard::index');

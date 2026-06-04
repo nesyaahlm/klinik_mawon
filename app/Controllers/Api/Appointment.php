@@ -24,11 +24,15 @@ class Appointment extends RestfullController
             ->select('appointments.*, 
                       users.username, 
                       doctors.name AS doctor_name,
+                      doctors.specialization,
+                      doctors.schedule,
+                      payments.payment_method,
+                      payments.amount,
                       payments.proof')
             ->join('users', 'users.id = appointments.user_id', 'left')
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
             ->join('payments', 'payments.appointment_id = appointments.id', 'left')
-            ->orderBy('appointments.id', 'ASC')
+            ->orderBy('appointments.id', 'DESC')
             ->findAll();
 
         return $this->responseHasil(200, true, $appointments);
@@ -65,12 +69,23 @@ class Appointment extends RestfullController
             'doctor_id' => $input['doctor_id'] ?? null,
             'date'      => $input['date'] ?? null,
             'time'      => $input['time'] ?? null,
+            'keluhan'   => $input['keluhan'] ?? $input['complaint'] ?? null,
             'status'    => $input['status'] ?? 'pending',
         ];
 
-        $this->appointmentModel->insert($data);
+        $appointmentId = $this->appointmentModel->insert($data);
+        $appointment = $this->appointmentModel
+            ->select('appointments.*, 
+                      users.username, 
+                      doctors.name AS doctor_name,
+                      doctors.specialization,
+                      doctors.schedule')
+            ->join('users', 'users.id = appointments.user_id', 'left')
+            ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
+            ->where('appointments.id', $appointmentId)
+            ->first();
 
-        return $this->responseHasil(201, true, 'Appointment berhasil ditambahkan');
+        return $this->responseHasil(201, true, $appointment);
     }
 
     // UPDATE APPOINTMENT
