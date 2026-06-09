@@ -29,7 +29,6 @@ class ProfileController extends BaseApiController
 
         return $this->success($this->formatProfile($user, $profile), 'Data profile berhasil diambil.');
     }
-
     public function update()
     {
         $userId = $this->currentUserId();
