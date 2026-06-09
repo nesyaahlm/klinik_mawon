@@ -23,6 +23,7 @@ class ProfileController extends BaseApiController
             'profile' => $profile,
         ]);
     }
+
     public function update()
     {
         $userId = $this->currentUserId();
