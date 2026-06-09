@@ -37,6 +37,11 @@ class Doctors extends RestfullController
     // CREATE DATA
     public function create()
     {
+        $input = $this->requestInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
+
         $photo = $this->request->getFile('photo');
         $fileName = null;
 
@@ -46,10 +51,10 @@ class Doctors extends RestfullController
         }
 
         $data = [
-            'name'           => $this->request->getPost('name'),
-            'specialization' => $this->request->getPost('specialization'),
-            'phone'          => $this->request->getPost('phone'),
-            'email'          => $this->request->getPost('email'),
+            'name'           => $input['name'] ?? null,
+            'specialization' => $input['specialization'] ?? null,
+            'phone'          => $input['phone'] ?? null,
+            'email'          => $input['email'] ?? null,
             'photo'          => $fileName
         ];
 
@@ -67,11 +72,16 @@ class Doctors extends RestfullController
             return $this->responseHasil(404, false, 'Dokter tidak ditemukan');
         }
 
+        $input = $this->requestInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
+
         $dataUpdate = [
-            'name'           => $this->request->getPost('name') ?? $doctor['name'],
-            'specialization' => $this->request->getPost('specialization') ?? $doctor['specialization'],
-            'phone'          => $this->request->getPost('phone') ?? $doctor['phone'],
-            'email'          => $this->request->getPost('email') ?? $doctor['email']
+            'name'           => $input['name'] ?? $doctor['name'],
+            'specialization' => $input['specialization'] ?? $doctor['specialization'],
+            'phone'          => $input['phone'] ?? $doctor['phone'],
+            'email'          => $input['email'] ?? $doctor['email']
         ];
 
         $photo = $this->request->getFile('photo');

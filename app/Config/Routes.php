@@ -106,10 +106,11 @@ $routes->group('api', function($routes){
     $routes->options('(:any)', static function() {
         return service('response')->setStatusCode(204);
     });
-    $routes->post('login', 'Api\Auth::login');
-    $routes->post('register', 'Api\Auth::register');
-    $routes->post('logout', 'Api\Auth::logout');
-    $routes->get('profile', 'Api\Auth::profile');
+    $routes->post('login', 'Api\AuthController::login');
+    $routes->post('register', 'Api\AuthController::register');
+    $routes->post('logout', 'Api\AuthController::logout');
+    $routes->get('profile', 'Api\ProfileController::show');
+    $routes->put('profile', 'Api\ProfileController::update');
 });
 
 $routes->group('api', function($routes){
@@ -130,11 +131,11 @@ $routes->group('api', function($routes){
 
 // api bookings alias untuk mobile
 $routes->group('api', function($routes){
-    $routes->get('bookings', 'Api\Appointment::index');
-    $routes->get('bookings/(:num)', 'Api\Appointment::show/$1');
-    $routes->post('bookings', 'Api\Appointment::create');
-    $routes->put('bookings/(:num)', 'Api\Appointment::update/$1');
-    $routes->delete('bookings/(:num)', 'Api\Appointment::delete/$1');
+    $routes->get('bookings', 'Api\AppointmentController::index');
+    $routes->get('bookings/(:num)', 'Api\AppointmentController::show/$1');
+    $routes->post('bookings', 'Api\AppointmentController::create');
+    $routes->put('bookings/(:num)', 'Api\AppointmentController::update/$1');
+    $routes->delete('bookings/(:num)', 'Api\AppointmentController::cancel/$1');
 });
 
 // api payments alias untuk mobile
@@ -148,8 +149,10 @@ $routes->group('api', function($routes){
 });
 // api doctors
 $routes->group('api', function($routes){
-    $routes->get('doctors', 'Api\Doctors::index');
-    $routes->get('doctors/(:num)', 'Api\Doctors::show/$1');
+    $routes->get('doctors', 'Api\DoctorController::index');
+    $routes->get('doctors/(:num)', 'Api\DoctorController::show/$1');
+    $routes->get('doctors/(:num)/schedules', 'Api\DoctorController::schedules/$1');
+    $routes->get('schedules', 'Api\DoctorController::allSchedules');
     $routes->post('doctors', 'Api\Doctors::create');
     $routes->post('doctors/update/(:num)', 'Api\Doctors::update/$1');
     $routes->delete('doctors/(:num)', 'Api\Doctors::delete/$1');
@@ -160,4 +163,10 @@ $routes->group('api', function($routes){
     $routes->get('kontak/(:num)', 'Api\Kontak::show/$1');
     $routes->post('kontak', 'Api\Kontak::create');
     $routes->delete('kontak/(:num)', 'Api\Kontak::delete/$1');
+});
+
+// fallback JSON khusus API agar Flutter/Postman tidak menerima HTML 404
+$routes->group('api', function($routes){
+    $routes->match(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/', 'Api\ErrorController::notFound');
+    $routes->match(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '(:any)', 'Api\ErrorController::notFound');
 });

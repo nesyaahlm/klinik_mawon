@@ -38,6 +38,7 @@ class ApiAuthFilter implements FilterInterface
         return service('response')->setStatusCode(401)->setJSON([
             'success' => false,
             'message' => $message,
+            'data'    => null,
             'errors'  => [],
         ]);
     }

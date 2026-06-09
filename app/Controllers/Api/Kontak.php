@@ -39,13 +39,15 @@ class Kontak extends RestfullController
     // CREATE KONTAK
     public function create()
     {
-        $input = $this->request->getJSON(true);
+        $input = $this->requestInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
 
         $data = [
-            'name'    => $input['name'] ?? null,
+            'nama'    => $input['nama'] ?? $input['name'] ?? null,
             'email'   => $input['email'] ?? null,
-            'subject' => $input['subject'] ?? null,
-            'message' => $input['message'] ?? null,
+            'pesan' => $input['pesan'] ?? $input['message'] ?? $input['subject'] ?? null,
         ];
 
         $this->kontakModel->insert($data);
