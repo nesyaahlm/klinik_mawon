@@ -19,6 +19,12 @@ class AdminDoctor extends RestfullController
     {
         $data = $this->doctorModel->findAll();
 
+        foreach ($data as &$doctor) {
+            if (!empty($doctor['photo'])) {
+                $doctor['photo'] = base_url('img/' . $doctor['photo']);
+            }
+        }
+
         return $this->responseHasil(200, true, $data);
     }
 
@@ -29,6 +35,10 @@ class AdminDoctor extends RestfullController
 
         if (!$doctor) {
             return $this->responseHasil(404, false, 'Data dokter tidak ditemukan');
+        }
+
+        if (!empty($doctor['photo'])) {
+            $doctor['photo'] = base_url('img/' . $doctor['photo']);
         }
 
         return $this->responseHasil(200, true, $doctor);

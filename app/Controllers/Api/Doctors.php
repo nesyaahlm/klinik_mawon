@@ -19,6 +19,12 @@ class Doctors extends RestfullController
     {
         $doctors = $this->doctorModel->findAll();
 
+        foreach ($doctors as &$doctor) {
+            if (!empty($doctor['photo'])) {
+                $doctor['photo'] = base_url('img/' . $doctor['photo']);
+            }
+        }
+
         return $this->responseHasil(200, true, $doctors);
     }
 
@@ -29,6 +35,10 @@ class Doctors extends RestfullController
 
         if (!$doctor) {
             return $this->responseHasil(404, false, 'Dokter tidak ditemukan');
+        }
+
+        if (!empty($doctor['photo'])) {
+            $doctor['photo'] = base_url('img/' . $doctor['photo']);
         }
 
         return $this->responseHasil(200, true, $doctor);

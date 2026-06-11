@@ -26,6 +26,7 @@ class Appointment extends RestfullController
                       doctors.name AS doctor_name,
                       doctors.specialization,
                       doctors.schedule,
+                      doctors.photo AS doctor_photo,
                       payments.payment_method,
                       payments.amount,
                       payments.proof')
@@ -34,6 +35,12 @@ class Appointment extends RestfullController
             ->join('payments', 'payments.appointment_id = appointments.id', 'left')
             ->orderBy('appointments.id', 'DESC')
             ->findAll();
+
+        foreach ($appointments as &$appt) {
+            if (!empty($appt['doctor_photo'])) {
+                $appt['doctor_photo'] = base_url('img/' . $appt['doctor_photo']);
+            }
+        }
 
         return $this->responseHasil(200, true, $appointments);
     }
@@ -45,6 +52,7 @@ class Appointment extends RestfullController
             ->select('appointments.*, 
                       users.username, 
                       doctors.name AS doctor_name,
+                      doctors.photo AS doctor_photo,
                       payments.proof')
             ->join('users', 'users.id = appointments.user_id', 'left')
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
@@ -54,6 +62,10 @@ class Appointment extends RestfullController
 
         if (!$appointment) {
             return $this->responseHasil(404, false, 'Appointment tidak ditemukan');
+        }
+
+        if (!empty($appointment['doctor_photo'])) {
+            $appointment['doctor_photo'] = base_url('img/' . $appointment['doctor_photo']);
         }
 
         return $this->responseHasil(200, true, $appointment);
@@ -79,15 +91,19 @@ class Appointment extends RestfullController
                       users.username, 
                       doctors.name AS doctor_name,
                       doctors.specialization,
-                      doctors.schedule')
+                      doctors.schedule,
+                      doctors.photo AS doctor_photo')
             ->join('users', 'users.id = appointments.user_id', 'left')
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
             ->where('appointments.id', $appointmentId)
             ->first();
 
+        if (!empty($appointment['doctor_photo'])) {
+            $appointment['doctor_photo'] = base_url('img/' . $appointment['doctor_photo']);
+        }
+
         return $this->responseHasil(201, true, $appointment);
     }
-
     // UPDATE APPOINTMENT
     public function update($id = null)
     {
