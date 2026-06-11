@@ -20,21 +20,31 @@ class Appointment extends RestfullController
     // GET ALL APPOINTMENT
     public function index()
     {
-        $appointments = $this->appointmentModel
-            ->select('appointments.*, 
-                      users.username, 
-                      doctors.name AS doctor_name,
-                      doctors.specialization,
-                      doctors.schedule,
-                      doctors.photo AS doctor_photo,
-                      payments.payment_method,
-                      payments.amount,
-                      payments.proof')
-            ->join('users', 'users.id = appointments.user_id', 'left')
+        $hasUsersTable = db_connect()->tableExists('users');
+        $select = 'appointments.*, 
+                   doctors.name AS doctor_name,
+                   doctors.specialization,
+                   doctors.schedule,
+                   doctors.photo AS doctor_photo,
+                   payments.payment_method,
+                   payments.amount,
+                   payments.proof';
+
+        if ($hasUsersTable) {
+            $select .= ', users.username';
+        }
+
+        $model = $this->appointmentModel
+            ->select($select)
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
             ->join('payments', 'payments.appointment_id = appointments.id', 'left')
-            ->orderBy('appointments.id', 'DESC')
-            ->findAll();
+            ->orderBy('appointments.id', 'DESC');
+
+        if ($hasUsersTable) {
+            $model->join('users', 'users.id = appointments.user_id', 'left');
+        }
+
+        $appointments = $model->findAll();
 
         foreach ($appointments as &$appt) {
             if (!empty($appt['doctor_photo'])) {
@@ -48,17 +58,24 @@ class Appointment extends RestfullController
     // GET DETAIL APPOINTMENT
     public function show($id = null)
     {
-        $appointment = $this->appointmentModel
-            ->select('appointments.*, 
-                      users.username, 
-                      doctors.name AS doctor_name,
-                      doctors.photo AS doctor_photo,
-                      payments.proof')
-            ->join('users', 'users.id = appointments.user_id', 'left')
+        $hasUsersTable = db_connect()->tableExists('users');
+        $select = 'appointments.*, doctors.name AS doctor_name, doctors.photo AS doctor_photo, payments.proof';
+
+        if ($hasUsersTable) {
+            $select .= ', users.username';
+        }
+
+        $model = $this->appointmentModel
+            ->select($select)
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
             ->join('payments', 'payments.appointment_id = appointments.id', 'left')
-            ->where('appointments.id', $id)
-            ->first();
+            ->where('appointments.id', $id);
+
+        if ($hasUsersTable) {
+            $model->join('users', 'users.id = appointments.user_id', 'left');
+        }
+
+        $appointment = $model->first();
 
         if (!$appointment) {
             return $this->responseHasil(404, false, 'Appointment tidak ditemukan');
@@ -74,7 +91,10 @@ class Appointment extends RestfullController
     // CREATE APPOINTMENT
     public function create()
     {
-        $input = $this->request->getJSON(true);
+        $input = $this->requestInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
 
         $data = [
             'user_id'   => $input['user_id'] ?? null,
@@ -86,17 +106,23 @@ class Appointment extends RestfullController
         ];
 
         $appointmentId = $this->appointmentModel->insert($data);
-        $appointment = $this->appointmentModel
-            ->select('appointments.*, 
-                      users.username, 
-                      doctors.name AS doctor_name,
-                      doctors.specialization,
-                      doctors.schedule,
-                      doctors.photo AS doctor_photo')
-            ->join('users', 'users.id = appointments.user_id', 'left')
+        $hasUsersTable = db_connect()->tableExists('users');
+        $select = 'appointments.*, doctors.name AS doctor_name, doctors.specialization, doctors.schedule, doctors.photo AS doctor_photo';
+
+        if ($hasUsersTable) {
+            $select .= ', users.username';
+        }
+
+        $model = $this->appointmentModel
+            ->select($select)
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
-            ->where('appointments.id', $appointmentId)
-            ->first();
+            ->where('appointments.id', $appointmentId);
+
+        if ($hasUsersTable) {
+            $model->join('users', 'users.id = appointments.user_id', 'left');
+        }
+
+        $appointment = $model->first();
 
         if (!empty($appointment['doctor_photo'])) {
             $appointment['doctor_photo'] = base_url('img/' . $appointment['doctor_photo']);
@@ -104,6 +130,7 @@ class Appointment extends RestfullController
 
         return $this->responseHasil(201, true, $appointment);
     }
+
     // UPDATE APPOINTMENT
     public function update($id = null)
     {
@@ -113,7 +140,10 @@ class Appointment extends RestfullController
             return $this->responseHasil(404, false, 'Appointment tidak ditemukan');
         }
 
-        $input = $this->request->getJSON(true);
+        $input = $this->requestInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
 
         $data = [
             'user_id'   => $input['user_id'] ?? $appointment['user_id'],

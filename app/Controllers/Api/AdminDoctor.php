@@ -47,7 +47,10 @@ class AdminDoctor extends RestfullController
     // POST DATA
     public function create()
     {
-        $input = $this->request->getJSON(true);
+        $input = $this->requestInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
 
         $data = [
             'name' => $input['name'] ?? null,
@@ -68,7 +71,11 @@ class AdminDoctor extends RestfullController
         if (!$doctor) {
             return $this->responseHasil(404, false, 'Data dokter tidak ditemukan');
         }
-        $input = $this->request->getRawInput();
+        $input = $this->requestInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
+
         $data = [
             'name' => $input['name'] ?? $doctor['name'],
             'specialization' => $input['specialization'] ?? $doctor['specialization'],

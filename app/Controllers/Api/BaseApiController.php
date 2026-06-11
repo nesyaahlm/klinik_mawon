@@ -24,6 +24,7 @@ abstract class BaseApiController extends BaseController
         return $this->response->setStatusCode($status)->setJSON([
             'success' => false,
             'message' => $message,
+            'data'    => null,
             'errors'  => $errors,
         ]);
     }

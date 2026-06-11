@@ -12,6 +12,10 @@ class Auth extends RestfullController
     public function login()
     {
         $input = $this->getJsonInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
+
         $login = trim($input['login'] ?? $input['email'] ?? $input['username'] ?? '');
         $password = (string) ($input['password'] ?? '');
 
@@ -37,6 +41,10 @@ class Auth extends RestfullController
     public function register()
     {
         $input = $this->getJsonInput();
+        if (($invalidJson = $this->invalidJsonResponse()) !== null) {
+            return $invalidJson;
+        }
+
         $name = trim($input['name'] ?? $input['nama'] ?? '');
         $email = trim($input['email'] ?? '');
         $phone = trim($input['phone'] ?? $input['no_hp'] ?? '');
@@ -93,13 +101,7 @@ class Auth extends RestfullController
 
     private function getJsonInput(): array
     {
-        $json = $this->request->getJSON(true);
-
-        if (is_array($json)) {
-            return $json;
-        }
-
-        return $this->request->getPost() ?: [];
+        return $this->requestInput();
     }
 
     private function makeUsername(string $email, UserModel $userModel): string
@@ -140,8 +142,7 @@ class Auth extends RestfullController
     private function respondAuth(int $code, bool $status, string $message, ?array $data = null)
     {
         return $this->respond([
-            'code' => $code,
-            'status' => $status,
+            'success' => $status,
             'message' => $message,
             'data' => $data,
         ], $code);

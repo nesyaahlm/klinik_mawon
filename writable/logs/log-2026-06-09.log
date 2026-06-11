@@ -1,4 +1,27 @@
+<<<<<<< HEAD
+ERROR - 2026-06-09 02:01:37 --> mysqli_sql_exception: Table 'kl_mawon3.profiles' doesn't exist in engine in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `pr...', 0)
+#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `pr...')
+#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `pr...')
+#3 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `pr...', Array, false)
+#4 C:\xampp\htdocs\klinik_mawon\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(838): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\klinik_mawon\system\Model.php(797): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(136): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(65): App\Controllers\Api\AuthController->saveOptionalProfile(6, Array)
+#9 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\AuthController->register()
+#10 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\AuthController))
+#11 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#13 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#14 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#15 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#16 {main}
+ERROR - 2026-06-09 02:01:37 --> mysqli_sql_exception: Table 'kl_mawon3.profiles' doesn't exist in engine in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:327
+=======
 ERROR - 2026-06-09 01:02:02 --> mysqli_sql_exception: MySQL server has gone away in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:327
+>>>>>>> 89b26e5562052b1f25119dc53c6d7d377ff2e0f0
 Stack trace:
 #0 C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT *\nFROM `...', 0)
 #1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *\nFROM `...')
@@ -6,6 +29,73 @@ Stack trace:
 #3 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
 #4 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
 #5 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
+<<<<<<< HEAD
+#6 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(164): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(76): App\Controllers\Api\AuthController->publicUserWithProfile(Object(App\Entities\User))
+#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\AuthController->register()
+#9 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\AuthController))
+#10 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#15 {main}
+ERROR - 2026-06-09 02:15:10 --> mysqli_sql_exception: Table 'kl_mawon3.profiles' doesn't exist in engine in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `pr...', 0)
+#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `pr...')
+#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `pr...')
+#3 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `pr...', Array, false)
+#4 C:\xampp\htdocs\klinik_mawon\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(838): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\klinik_mawon\system\Model.php(797): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(136): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(65): App\Controllers\Api\AuthController->saveOptionalProfile(7, Array)
+#9 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\AuthController->register()
+#10 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\AuthController))
+#11 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#13 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#14 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#15 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#16 {main}
+ERROR - 2026-06-09 02:15:10 --> mysqli_sql_exception: Table 'kl_mawon3.profiles' doesn't exist in engine in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT *\nFROM `...', 0)
+#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *\nFROM `...')
+#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *\nFROM `...')
+#3 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(164): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(76): App\Controllers\Api\AuthController->publicUserWithProfile(Object(App\Entities\User))
+#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\AuthController->register()
+#9 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\AuthController))
+#10 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#15 {main}
+ERROR - 2026-06-09 02:20:06 --> mysqli_sql_exception: Table 'kl_mawon3.profiles' doesn't exist in engine in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT *\nFROM `...', 0)
+#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *\nFROM `...')
+#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *\nFROM `...')
+#3 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(164): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\AuthController.php(110): App\Controllers\Api\AuthController->publicUserWithProfile(Object(App\Entities\User))
+#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\AuthController->login()
+#9 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\AuthController))
+#10 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#15 {main}
+=======
 #6 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
 #7 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
 #8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
@@ -200,165 +290,4 @@ AND `users`.`deleted_at` IS NULL
 10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
 12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\klinik_mawon\\public\\index.php')
-ERROR - 2026-06-09 01:13:53 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:201
-Stack trace:
-#0 C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php(201): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'kl_mawon3', 3306, '', 0)
-#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
-#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
-#3 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
-#4 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
-#5 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
-#6 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
-#7 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
-#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
-#9 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
-#10 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
-#11 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-#12 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-#13 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
-#14 {main}
-
-Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:246
-Stack trace:
-#0 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
-#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
-#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
-#3 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
-#4 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
-#5 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
-#6 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
-#7 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
-#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
-#9 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
-#10 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-#11 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-#12 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
-#13 {main}
-CRITICAL - 2026-06-09 01:13:53 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
-Main connection [MySQLi]: No connection could be made because the target machine actively refused it
-[Method: POST, Route: api/login]
-in SYSTEMPATH\Database\BaseConnection.php on line 465.
- 1 SYSTEMPATH\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
- 2 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
-FROM `users`
-WHERE `email` = :email:
-AND `users`.`deleted_at` IS NULL
- LIMIT 1', [...], false)
- 3 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
- 4 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
- 5 APPPATH\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
- 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
- 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
- 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
- 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
-10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\klinik_mawon\\public\\index.php')
-ERROR - 2026-06-09 01:14:56 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:201
-Stack trace:
-#0 C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php(201): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'kl_mawon3', 3306, '', 0)
-#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
-#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
-#3 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
-#4 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
-#5 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
-#6 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
-#7 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
-#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
-#9 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
-#10 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
-#11 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-#12 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-#13 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
-#14 {main}
-
-Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:246
-Stack trace:
-#0 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
-#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
-#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
-#3 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
-#4 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
-#5 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
-#6 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
-#7 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
-#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
-#9 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
-#10 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-#11 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-#12 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
-#13 {main}
-CRITICAL - 2026-06-09 01:14:56 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
-Main connection [MySQLi]: No connection could be made because the target machine actively refused it
-[Method: POST, Route: api/login]
-in SYSTEMPATH\Database\BaseConnection.php on line 465.
- 1 SYSTEMPATH\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
- 2 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
-FROM `users`
-WHERE `email` = :email:
-AND `users`.`deleted_at` IS NULL
- LIMIT 1', [...], false)
- 3 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
- 4 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
- 5 APPPATH\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
- 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
- 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
- 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
- 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
-10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\klinik_mawon\\public\\index.php')
-ERROR - 2026-06-09 01:33:04 --> Error connecting to the database: mysqli_sql_exception: No connection could be made because the target machine actively refused it in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:201
-Stack trace:
-#0 C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php(201): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'kl_mawon3', 3306, '', 0)
-#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
-#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
-#3 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
-#4 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
-#5 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
-#6 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
-#7 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
-#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
-#9 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
-#10 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
-#11 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-#12 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-#13 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
-#14 {main}
-
-Next CodeIgniter\Database\Exceptions\DatabaseException: No connection could be made because the target machine actively refused it in C:\xampp\htdocs\klinik_mawon\system\Database\MySQLi\Connection.php:246
-Stack trace:
-#0 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
-#1 C:\xampp\htdocs\klinik_mawon\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
-#2 C:\xampp\htdocs\klinik_mawon\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
-#3 C:\xampp\htdocs\klinik_mawon\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
-#4 C:\xampp\htdocs\klinik_mawon\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
-#5 C:\xampp\htdocs\klinik_mawon\app\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
-#6 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
-#7 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
-#8 C:\xampp\htdocs\klinik_mawon\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
-#9 C:\xampp\htdocs\klinik_mawon\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
-#10 C:\xampp\htdocs\klinik_mawon\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-#11 C:\xampp\htdocs\klinik_mawon\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-#12 C:\xampp\htdocs\klinik_mawon\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
-#13 {main}
-CRITICAL - 2026-06-09 01:33:04 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
-Main connection [MySQLi]: No connection could be made because the target machine actively refused it
-[Method: POST, Route: api/login]
-in SYSTEMPATH\Database\BaseConnection.php on line 465.
- 1 SYSTEMPATH\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
- 2 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
-FROM `users`
-WHERE `email` = :email:
-AND `users`.`deleted_at` IS NULL
- LIMIT 1', [...], false)
- 3 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
- 4 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
- 5 APPPATH\Controllers\Api\Auth.php(24): CodeIgniter\BaseModel->first()
- 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Api\Auth->login()
- 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Api\Auth))
- 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
- 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
-10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
-11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
-12 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\klinik_mawon\\public\\index.php')
+>>>>>>> 89b26e5562052b1f25119dc53c6d7d377ff2e0f0

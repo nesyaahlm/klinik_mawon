@@ -41,6 +41,7 @@ class ApiExceptionHandler implements ExceptionHandlerInterface
         $response->setStatusCode($statusCode)->setJSON([
             'success' => false,
             'message' => $message,
+            'data'    => null,
             'errors'  => [],
         ])->send();
 
