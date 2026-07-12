@@ -1,0 +1,7 @@
+
+.history/
+writable/debugbar/
+writable/logs/
+writable/cache/
+public/uploads/profiles/
+.env
