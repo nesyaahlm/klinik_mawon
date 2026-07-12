@@ -15,7 +15,10 @@ class PaymentModel extends Model
     'payment_date',
     'status',
     'proof',
-    'bukti'
+    'bukti',
+    'paid_at',
+    'created_at',
+    'updated_at',
 ];
 
     

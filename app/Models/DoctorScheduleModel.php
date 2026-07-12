@@ -8,7 +8,7 @@ class DoctorScheduleModel extends Model
 {
     protected $table = 'doctor_schedule';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['doctor_id', 'day', 'start_time', 'end_time'];
+    protected $allowedFields = ['doctor_id', 'day', 'date', 'start_time', 'end_time', 'is_available'];
     protected $returnType = 'array';
 
 }

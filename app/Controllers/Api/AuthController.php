@@ -49,25 +49,47 @@ class AuthController extends BaseApiController
             ], 422);
         }
 
-        $user = new User([
-            'username' => $username,
-            'email'    => $email,
-        ]);
-        $user->password = $input['password'];
-        $user->activate();
-
+        $db = db_connect();
         $userModel = new UserModel();
-        if (! $userModel->save($user)) {
-            return $this->failure('Registrasi gagal.', $userModel->errors(), 422);
+        $db->transStart();
+
+        try {
+            $user = new User([
+                'username' => $username,
+                'email'    => $email,
+            ]);
+            $user->password = $input['password'];
+            $user->activate();
+
+            if (! $userModel->save($user)) {
+                $db->transRollback();
+                return $this->failure('Registrasi gagal.', $userModel->errors(), 422);
+            }
+
+            $userId = (int) ($user->id ?? $userModel->getInsertID());
+            $profileData = array_merge($input, [
+                'name'  => $name !== '' ? $name : $username,
+                'phone' => $phone,
+            ]);
+
+            if (! $this->saveLinkedProfile($userId, $profileData)) {
+                $db->transRollback();
+                return $this->failure('Registrasi gagal membuat profil pasien.', [], 500);
+            }
+
+            $db->transComplete();
+        } catch (Throwable $e) {
+            $db->transRollback();
+            return $this->failure('Registrasi gagal diproses.', ['server' => $e->getMessage()], 500);
         }
 
-        $userId = (int) ($user->id ?? $userModel->getInsertID());
-        $this->saveOptionalProfile($userId, array_merge($input, [
-            'name'  => $name,
-            'phone' => $phone,
-        ]));
+        if (! $db->transStatus()) {
+            return $this->failure('Registrasi gagal diproses.', [], 500);
+        }
 
-        $token = (new ApiTokenModel())->issueToken($userId, $input['device_name'] ?? null);
+        $tokenModel = new ApiTokenModel();
+        $tokenModel->where('user_id', $userId)->set(['revoked_at' => date('Y-m-d H:i:s')])->update();
+        $token = $tokenModel->issueToken($userId, $input['device_name'] ?? null);
         $createdUser = $userModel->find($userId);
 
         return $this->success([
@@ -102,7 +124,9 @@ class AuthController extends BaseApiController
             return $this->failure('Akun tidak dapat digunakan.', [], 403);
         }
 
-        $token = (new ApiTokenModel())->issueToken((int) $user->id, $input['device_name'] ?? null);
+        $tokenModel = new ApiTokenModel();
+        $tokenModel->where('user_id', (int) $user->id)->set(['revoked_at' => date('Y-m-d H:i:s')])->update();
+        $token = $tokenModel->issueToken((int) $user->id, $input['device_name'] ?? null);
 
         return $this->success([
             'token'      => $token,
@@ -122,22 +146,44 @@ class AuthController extends BaseApiController
         return $this->success([], 'Logout berhasil.');
     }
 
-    private function saveOptionalProfile(int $userId, array $input): void
+    private function saveLinkedProfile(int $userId, array $input): bool
     {
-        $profile = array_filter([
-            'name'    => $input['name'] ?? $input['nama'] ?? null,
-            'phone'   => $input['phone'] ?? $input['no_hp'] ?? null,
-            'address' => $input['address'] ?? $input['alamat'] ?? null,
-        ], static fn ($value): bool => $value !== null && $value !== '');
+        if ($this->safeTableExists('profiles')) {
+            $profile = $this->filterExistingFields('profiles', [
+            'user_id' => $userId,
+            'name'    => $input['name'] ?? $input['nama'] ?? $input['username'] ?? '',
+            'phone'   => $input['phone'] ?? $input['no_hp'] ?? $input['nomor_hp'] ?? $input['no_telp'] ?? $input['telepon'] ?? '',
+            'address' => $input['address'] ?? $input['alamat'] ?? '',
+            ]);
 
-        if ($profile !== []) {
-            try {
-                $profile['user_id'] = $userId;
-                (new ProfileModel())->insert($profile);
-            } catch (Throwable) {
-                return;
-            }
+            return $profile !== [] && (bool) db_connect()->table('profiles')->insert($profile);
         }
+
+        if ($this->safeTableExists('mobile_profiles')) {
+            $profile = $this->filterExistingFields('mobile_profiles', [
+                'user_id' => $userId,
+                'name'    => $input['name'] ?? $input['nama'] ?? $input['username'] ?? '',
+                'phone'   => $input['phone'] ?? $input['no_hp'] ?? $input['nomor_hp'] ?? $input['no_telp'] ?? $input['telepon'] ?? '',
+                'address' => $input['address'] ?? $input['alamat'] ?? '',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+
+            return $profile !== [] && (bool) db_connect()->table('mobile_profiles')->insert($profile);
+        }
+
+        if ($this->safeTableExists('pasien')) {
+            $pasien = $this->filterExistingFields('pasien', [
+                'user_id' => $userId,
+                'nama'    => $input['name'] ?? $input['nama'] ?? $input['username'] ?? '',
+                'phone'   => $input['phone'] ?? $input['no_hp'] ?? $input['nomor_hp'] ?? $input['no_telp'] ?? $input['telepon'] ?? '',
+                'alamat'  => $input['address'] ?? $input['alamat'] ?? '',
+            ]);
+
+            return $pasien !== [] && (bool) db_connect()->table('pasien')->insert($pasien);
+        }
+
+        return false;
     }
 
     private function makeUsername(string $email): string
@@ -161,7 +207,7 @@ class AuthController extends BaseApiController
     private function publicUserWithProfile(object $user): array
     {
         try {
-            $profile = (new ProfileModel())->where('user_id', (int) $user->id)->first() ?? [];
+            $profile = $this->loadLinkedProfile((int) $user->id);
         } catch (Throwable) {
             $profile = [];
         }
@@ -174,5 +220,27 @@ class AuthController extends BaseApiController
             'address' => $profile['address'] ?? '',
             'alamat'  => $profile['address'] ?? '',
         ]);
+    }
+
+    private function loadLinkedProfile(int $userId): array
+    {
+        if ($this->safeTableExists('profiles')) {
+            return (new ProfileModel())->where('user_id', $userId)->first() ?? [];
+        }
+
+        if ($this->safeTableExists('mobile_profiles')) {
+            return db_connect()->table('mobile_profiles')->where('user_id', $userId)->get()->getRowArray() ?? [];
+        }
+
+        if ($this->safeTableExists('pasien') && $this->safeFieldExists('user_id', 'pasien')) {
+            $pasien = db_connect()->table('pasien')->where('user_id', $userId)->get()->getRowArray() ?? [];
+            return [
+                'name' => $pasien['nama'] ?? '',
+                'phone' => $pasien['phone'] ?? $pasien['no_hp'] ?? '',
+                'address' => $pasien['alamat'] ?? '',
+            ];
+        }
+
+        return [];
     }
 }

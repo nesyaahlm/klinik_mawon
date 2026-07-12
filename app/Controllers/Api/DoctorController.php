@@ -35,13 +35,14 @@ class DoctorController extends BaseApiController
 
     public function schedules(int $id)
     {
-        if ((new DoctorModel())->find($id) === null) {
+        $doctor = (new DoctorModel())->find($id);
+        if ($doctor === null) {
             return $this->failure('Dokter tidak ditemukan.', [], 404);
         }
 
         try {
-            if (! db_connect()->tableExists('doctor_schedule')) {
-                return $this->success([], 'Jadwal dokter belum tersedia.');
+            if (! $this->safeTableExists('doctor_schedule')) {
+                return $this->success($this->fallbackSchedules($doctor), 'Jadwal dokter diambil dari data dokter.');
             }
 
             $schedules = (new DoctorScheduleModel())
@@ -49,7 +50,7 @@ class DoctorController extends BaseApiController
                 ->orderBy('id', 'ASC')
                 ->findAll();
         } catch (Throwable) {
-            return $this->success([], 'Jadwal dokter belum tersedia.');
+            return $this->success($this->fallbackSchedules($doctor), 'Jadwal dokter diambil dari data dokter.');
         }
 
         return $this->success($schedules, 'Data jadwal berhasil diambil.');
@@ -59,17 +60,23 @@ class DoctorController extends BaseApiController
     {
         try {
             $db = db_connect();
+            $doctorId = $this->request->getGet('doctor_id');
 
-            if (! $db->tableExists('doctor_schedule')) {
+            if (! $this->safeTableExists('doctor_schedule')) {
                 return $this->success([], 'Jadwal dokter belum tersedia.');
             }
 
-            $schedules = (new DoctorScheduleModel())
+            $model = (new DoctorScheduleModel())
                 ->select('doctor_schedule.*, doctors.name AS doctor_name, doctors.specialization')
                 ->join('doctors', 'doctors.id = doctor_schedule.doctor_id', 'left')
                 ->orderBy('doctor_schedule.doctor_id', 'ASC')
-                ->orderBy('doctor_schedule.id', 'ASC')
-                ->findAll();
+                ->orderBy('doctor_schedule.id', 'ASC');
+
+            if ($doctorId !== null && $doctorId !== '') {
+                $model->where('doctor_schedule.doctor_id', (int) $doctorId);
+            }
+
+            $schedules = $model->findAll();
         } catch (Throwable) {
             return $this->success([], 'Jadwal dokter belum tersedia.');
         }
@@ -80,7 +87,7 @@ class DoctorController extends BaseApiController
     private function formatDoctor(array $doctor): array
     {
         $schedule = $doctor['schedule'] ?? '';
-        $photo = $doctor['photo'] ?? '';
+        $photo = $this->normalizePhotoUrl($doctor['photo'] ?? '');
 
         return array_merge($doctor, [
             'id_dokter'       => (int) ($doctor['id'] ?? 0),
@@ -93,6 +100,7 @@ class DoctorController extends BaseApiController
             'practice_time'   => $schedule,
             'jadwal_praktik'  => $schedule,
             'image_url'       => $photo,
+            'photo_url'       => $photo,
             'foto'            => $photo,
             'available_dates' => ['Hari ini'],
             'available_times' => $this->extractTimes($schedule),
@@ -109,5 +117,20 @@ class DoctorController extends BaseApiController
         }
 
         return array_map(static fn (string $time): string => str_replace('.', ':', $time), $matches[0]);
+    }
+
+    private function fallbackSchedules(array $doctor): array
+    {
+        $times = $this->extractTimes((string) ($doctor['schedule'] ?? ''));
+
+        return array_map(static fn (string $time): array => [
+            'id' => null,
+            'doctor_id' => (int) ($doctor['id'] ?? 0),
+            'day' => 'Hari ini',
+            'date' => date('Y-m-d'),
+            'start_time' => $time,
+            'end_time' => $time,
+            'is_available' => 1,
+        ], $times);
     }
 }

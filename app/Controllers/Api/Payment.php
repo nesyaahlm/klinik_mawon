@@ -24,20 +24,52 @@ class Payment extends BaseApiController
             return $invalidJson;
         }
 
-        $appointmentId = $input['booking_id'] ?? $input['id_booking'] ?? null;
+        $appointmentId = $input['booking_id'] ?? $input['id_booking'] ?? $input['appointment_id'] ?? $input['id_appointment'] ?? null;
 
         if (! is_numeric($appointmentId)) {
-            return $this->failure('booking_id wajib berupa ID appointment.', [], 422);
+            return $this->failure('booking_id atau appointment_id wajib berupa ID appointment.', [], 422);
+        }
+
+        $userId = $this->currentUserId();
+        if ($userId === null) {
+            return $this->failure('Token autentikasi diperlukan.', [], 401);
         }
 
         $appointment = $this->appointmentModel->find((int) $appointmentId);
         if (! $appointment) {
             return $this->failure('Booking tidak ditemukan.', [], 404);
         }
+        if ((int) ($appointment['user_id'] ?? 0) !== $userId) {
+            return $this->failure('Booking tidak ditemukan untuk akun aktif.', [], 404);
+        }
 
-        $paymentMethod = $input['payment_method'] ?? $input['metode_pembayaran'] ?? 'QRIS';
+        $paymentMethod = strtolower($input['payment_method'] ?? $input['metode_pembayaran'] ?? 'qris');
+        if ($paymentMethod === 'transfer') {
+            $paymentMethod = 'bank_transfer';
+        }
         $amount = $input['amount'] ?? $input['total'] ?? 0;
-        $paymentSaved = $this->savePaymentIfTableIsUsable((int) $appointmentId, $paymentMethod, $amount, $input);
+
+        if (! in_array($paymentMethod, ['cash', 'bank_transfer', 'qris'], true)) {
+            return $this->failure('Metode pembayaran tidak valid.', [], 422);
+        }
+
+        if (! is_numeric($amount) || (int) $amount <= 0) {
+            return $this->failure('Jumlah pembayaran harus lebih besar dari nol.', [], 422);
+        }
+
+        $status = strtolower($appointment['status'] ?? '');
+        if (in_array($status, ['paid', 'done', 'completed', 'cancelled', 'canceled'], true)) {
+            return $this->failure('Booking sudah dikonfirmasi dan tidak dapat dibayar lagi.', [], 422);
+        }
+
+        if ($status === 'cancelled' || $status === 'dibatalkan' || $status === 'canceled') {
+            return $this->failure('Booking yang dibatalkan tidak dapat dibayar.', [], 422);
+        }
+
+        $paymentStatus = $paymentMethod === 'cash' ? 'pay_at_clinic' : 'pending';
+        $appointmentStatus = $paymentMethod === 'cash' ? 'confirmed' : 'menunggu konfirmasi';
+
+        $paymentSaved = $this->savePaymentIfTableIsUsable((int) $appointmentId, $paymentMethod, $amount, $input, $paymentStatus);
 
         $queueNumber = $appointment['no_antrian'];
         if ($queueNumber === null || $queueNumber === '') {
@@ -50,7 +82,7 @@ class Payment extends BaseApiController
         }
 
         $this->appointmentModel->update((int) $appointmentId, [
-            'status' => 'confirmed',
+            'status' => $appointmentStatus,
             'no_antrian' => $queueNumber,
         ]);
 
@@ -79,11 +111,12 @@ class Payment extends BaseApiController
         return $this->success($updated, 'Pembayaran berhasil dikonfirmasi.');
     }
 
-    private function savePaymentIfTableIsUsable(int $appointmentId, string $paymentMethod, $amount, array $input): bool
+    private function savePaymentIfTableIsUsable(int $appointmentId, string $paymentMethod, $amount, array $input, string $paymentStatus): bool
     {
         try {
             $db = db_connect();
-            if (! $db->tableExists('payments')) {
+            $table = $this->safeTableExists('payments') ? 'payments' : 'mobile_payments';
+            if (! $this->safeTableExists($table)) {
                 return false;
             }
 
@@ -91,14 +124,14 @@ class Payment extends BaseApiController
                 'appointment_id' => $appointmentId,
                 'payment_method' => $paymentMethod,
                 'amount' => $amount,
-                'status' => 'confirmed',
+                'status' => $paymentStatus,
                 'proof' => $input['proof'] ?? null,
                 'bukti' => $input['bukti'] ?? null,
             ];
 
             $paymentData = array_filter(
                 $paymentData,
-                static fn ($value, string $field): bool => $db->fieldExists($field, 'payments'),
+                fn ($value, string $field): bool => $this->safeFieldExists($field, $table),
                 ARRAY_FILTER_USE_BOTH
             );
 
@@ -106,7 +139,7 @@ class Payment extends BaseApiController
                 return false;
             }
 
-            return (bool) $this->paymentModel->insert($paymentData);
+            return (bool) $db->table($table)->insert($paymentData);
         } catch (Throwable) {
             return false;
         }

@@ -13,8 +13,6 @@ class AdminDoctor extends RestfullController
     {
         $this->doctorModel = new DoctorModel();
     }
-
-    // GET ALL DATA
     public function index()
     {
         $data = $this->doctorModel->findAll();
@@ -27,8 +25,6 @@ class AdminDoctor extends RestfullController
 
         return $this->responseHasil(200, true, $data);
     }
-
-    // GET DETAIL DATA
     public function show($id = null)
     {
         $doctor = $this->doctorModel->find($id);
@@ -43,8 +39,6 @@ class AdminDoctor extends RestfullController
 
         return $this->responseHasil(200, true, $doctor);
     }
-
-    // POST DATA
     public function create()
     {
         $input = $this->requestInput();

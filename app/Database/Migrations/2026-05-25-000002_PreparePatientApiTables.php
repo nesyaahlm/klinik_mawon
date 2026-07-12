@@ -83,6 +83,9 @@ class PreparePatientApiTables extends Migration
     private function prepareProfiles(): void
     {
         if ($this->db->tableExists('profiles')) {
+            $this->addMissingColumns('profiles', [
+                'photo' => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            ]);
             return;
         }
 
@@ -92,6 +95,7 @@ class PreparePatientApiTables extends Migration
             'name'       => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'phone'      => ['type' => 'VARCHAR', 'constraint' => 30, 'null' => true],
             'address'    => ['type' => 'TEXT', 'null' => true],
+            'photo'      => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'created_at' => ['type' => 'DATETIME', 'null' => true],
             'updated_at' => ['type' => 'DATETIME', 'null' => true],
         ]);

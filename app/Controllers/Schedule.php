@@ -2,35 +2,24 @@
 
 namespace App\Controllers;
 
-use App\Models\AppointmentModel; 
+use App\Models\AppointmentModel;
+use App\Models\DoctorModel;
+use App\Models\DoctorScheduleModel;
 
 class Schedule extends BaseController
 {
 
     public function index($doctorId)
     {
-        $doctors = [
-            1 => ['name' => 'Dr. Ahmad Sutanto, Sp.PD'],
-            2 => ['name' => 'Dr. Siti Nurhaliza, Sp.A'],
-            3 => ['name' => 'Dr. Budi Santoso, Sp.JP'],
-        ];
-
-        if (!isset($doctors[$doctorId])) {
+        $doctor = (new DoctorModel())->find((int) $doctorId);
+        if ($doctor === null) {
             return redirect()->to('/doctors');
         }
 
-        $scheduleTimes = [
-            '08:00',
-            '09:00',
-            '10:00',
-            '11:00',
-            '13:00',
-            '14:00',
-            '15:00'
-        ];
+        $scheduleTimes = $this->scheduleTimes((int) $doctorId);
 
         return view('schedule', [
-            'doctor' => $doctors[$doctorId],
+            'doctor' => $doctor,
             'id' => $doctorId,
             'scheduleTimes' => $scheduleTimes
         ]);
@@ -45,12 +34,37 @@ public function process()
         'doctor_id' => $this->request->getPost('doctor_id'),
         'date'      => $this->request->getPost('date'),
         'time'      => $this->request->getPost('time'),
+        'status'    => 'pending',
     ]);
 
 
     $appointmentId = $appointmentModel->getInsertID();
     
     return redirect()->to('/confirmation/' . $appointmentId);
+}
+
+private function scheduleTimes(int $doctorId): array
+{
+    try {
+        if (! db_connect()->tableExists('doctor_schedule')) {
+            return [];
+        }
+
+        $schedules = (new DoctorScheduleModel())
+            ->where('doctor_id', $doctorId)
+            ->findAll();
+
+        $times = [];
+        foreach ($schedules as $schedule) {
+            if (! empty($schedule['start_time'])) {
+                $times[] = substr((string) $schedule['start_time'], 0, 5);
+            }
+        }
+
+        return array_values(array_unique($times));
+    } catch (\Throwable) {
+        return [];
+    }
 }
 
 

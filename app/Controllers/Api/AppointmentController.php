@@ -3,26 +3,35 @@
 namespace App\Controllers\Api;
 
 use App\Models\AppointmentModel;
+use App\Models\DoctorScheduleModel;
 use App\Models\DoctorModel;
+use App\Models\PaymentModel;
+use Throwable;
 
 class AppointmentController extends BaseApiController
 {
     public function index()
     {
+        $userId = $this->currentUserId();
+        if ($userId === null) {
+            return $this->failure('Token autentikasi diperlukan.', [], 401);
+        }
+
         $hasUsersTable = $this->hasUsersTable();
+        $hasPaymentsTable = $this->hasPaymentsTable();
         $model = (new AppointmentModel())
-            ->select($this->appointmentSelect($hasUsersTable))
+            ->select($this->appointmentSelect($hasUsersTable, $hasPaymentsTable))
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
             ->orderBy('appointments.id', 'DESC');
 
         if ($hasUsersTable) {
             $model->join('users', 'users.id = appointments.user_id', 'left');
         }
-
-        $userId = $this->currentUserId();
-        if ($userId !== null) {
-            $model->where('appointments.user_id', $userId);
+        if ($hasPaymentsTable) {
+            $model->join('payments', 'payments.appointment_id = appointments.id', 'left');
         }
+
+        $model->where('appointments.user_id', $userId);
 
         $appointments = array_map(fn (array $appointment): array => $this->formatAppointment($appointment), $model->findAll());
 
@@ -50,43 +59,121 @@ class AppointmentController extends BaseApiController
         $input = $this->normalizeInput($input);
 
         $rules = [
-            'doctor_id' => 'required|integer',
-            'date'      => 'required|valid_date[Y-m-d]',
-            'time'      => 'required',
-            'keluhan'   => 'permit_empty|max_length[1000]',
+            'doctor_id'      => 'required|integer',
+            'schedule_id'    => 'permit_empty|integer',
+            'date'           => 'permit_empty|valid_date[Y-m-d]',
+            'time'           => 'permit_empty',
+            'payment_method' => 'required|in_list[cash,bank_transfer,qris]',
+            'keluhan'        => 'required|max_length[1000]',
         ];
 
         if (! $this->validateData($input, $rules)) {
             return $this->failure('Validasi gagal.', $this->validator->getErrors(), 422);
         }
 
-        if ((new DoctorModel())->find((int) $input['doctor_id']) === null) {
+        $doctor = (new DoctorModel())->find((int) $input['doctor_id']);
+        if ($doctor === null) {
             return $this->failure('Dokter tidak ditemukan.', [], 404);
         }
 
-        $userId = $this->currentUserId() ?? (isset($input['user_id']) ? (int) $input['user_id'] : null);
-        if ($userId === null || $userId <= 0) {
-            return $this->failure('Token autentikasi atau user_id diperlukan.', [], 401);
+        $userId = $this->currentUserId();
+        if ($userId === null) {
+            return $this->failure('Token autentikasi diperlukan.', [], 401);
         }
 
-        $model = new AppointmentModel();
-        $model->insert([
-            'user_id'   => $userId,
-            'doctor_id' => (int) $input['doctor_id'],
-            'date'      => $input['date'],
-            'time'      => $input['time'],
-            'keluhan'   => $input['keluhan'] ?? null,
-            'status'    => 'waiting',
-            'no_antrian' => null,
-        ]);
+        $schedule = $this->resolveSchedule($input, (int) $input['doctor_id']);
+        if ($schedule === false) {
+            return $this->failure('Jadwal tidak ditemukan atau bukan milik dokter yang dipilih.', [], 404);
+        }
 
-        $appointment = $this->findAppointment((int) $model->getInsertID());
+        if (($input['date'] ?? '') === '' && is_array($schedule)) {
+            $input['date'] = $this->scheduleDate($schedule);
+        }
+        if (($input['time'] ?? '') === '' && is_array($schedule)) {
+            $input['time'] = $this->scheduleTime($schedule);
+        }
+        if (($input['date'] ?? '') === '' || ($input['time'] ?? '') === '') {
+            return $this->failure('Tanggal dan jam booking wajib dipilih.', [], 422);
+        }
+
+        $existingBooking = (new AppointmentModel())
+            ->where('user_id', $userId)
+            ->whereNotIn('status', ['cancelled', 'canceled', 'done', 'completed'])
+            ->first();
+
+        if ($existingBooking !== null) {
+            return $this->failure(
+                'Anda sudah memiliki booking aktif. Hanya satu booking aktif yang diperbolehkan.',
+                [],
+                409,
+            );
+        }
+
+        $db = db_connect();
+        $appointmentModel = new AppointmentModel();
+        $paymentTable = $this->paymentTable();
+        $amount = (int) ($input['total'] ?? $doctor['fee'] ?? 50000);
+        if ($amount <= 0) {
+            $amount = 50000;
+        }
+        $appointmentStatus = $input['payment_method'] === 'cash' ? 'confirmed' : 'waiting_payment';
+        $paymentStatus = $input['payment_method'] === 'cash' ? 'pay_at_clinic' : 'unpaid';
+
+        $db->transStart();
+        try {
+            $appointmentData = $this->filterExistingFields('appointments', [
+            'user_id'        => $userId,
+            'doctor_id'      => (int) $input['doctor_id'],
+            'schedule_id'    => $input['schedule_id'] ?? null,
+            'date'           => $input['date'],
+            'time'           => $input['time'],
+            'keluhan'        => $input['keluhan'],
+            'status'         => $appointmentStatus,
+            'payment_method' => $input['payment_method'],
+            'amount'         => $amount,
+            'no_antrian'     => null,
+            ]);
+
+            $appointmentModel->insert($appointmentData);
+            $appointmentId = (int) $appointmentModel->getInsertID();
+
+            $paymentData = $this->filterExistingFields($paymentTable, [
+                'appointment_id' => $appointmentId,
+                'payment_method' => $input['payment_method'],
+                'amount'         => $amount,
+                'status'         => $paymentStatus,
+                'payment_date'   => date('Y-m-d H:i:s'),
+                'created_at'     => date('Y-m-d H:i:s'),
+                'updated_at'     => date('Y-m-d H:i:s'),
+            ]);
+            if ($paymentData !== [] && $this->safeTableExists($paymentTable)) {
+                db_connect()->table($paymentTable)->insert($paymentData);
+            }
+
+            $db->transComplete();
+        } catch (Throwable $e) {
+            $db->transRollback();
+            return $this->failure('Booking gagal dibuat.', ['server' => $e->getMessage()], 500);
+        }
+
+        if (! $db->transStatus()) {
+            return $this->failure('Booking gagal dibuat.', [], 500);
+        }
+
+        $appointment = $this->findAppointment($appointmentId);
         $formatted = $this->formatAppointment($appointment);
-        $formatted['payment_method'] = $input['payment_method'] ?? $input['metode_pembayaran'] ?? null;
-        $formatted['metode_pembayaran'] = $formatted['payment_method'];
-        $formatted['total'] = (int) ($input['total'] ?? $formatted['total'] ?? 0);
 
-        return $this->success($formatted, 'Booking berhasil dibuat.', 201);
+        return $this->success([
+            'booking' => $formatted,
+            'payment' => [
+                'appointment_id'  => $appointmentId,
+                'payment_method'  => $input['payment_method'],
+                'amount'          => $amount,
+                'status'          => $paymentStatus,
+                'bank'            => $input['payment_method'] === 'bank_transfer' ? $this->bankConfig() : null,
+                'qris_url'        => $input['payment_method'] === 'qris' ? base_url('img/qr.png') : null,
+            ],
+        ], 'Booking berhasil dibuat.', 201);
     }
 
     public function update(int $id)
@@ -154,13 +241,17 @@ class AppointmentController extends BaseApiController
     private function findOwnedAppointment(int $id): ?array
     {
         $hasUsersTable = $this->hasUsersTable();
+        $hasPaymentsTable = $this->hasPaymentsTable();
         $model = (new AppointmentModel())
-            ->select($this->appointmentSelect($hasUsersTable))
+            ->select($this->appointmentSelect($hasUsersTable, $hasPaymentsTable))
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
             ->where('appointments.id', $id);
 
         if ($hasUsersTable) {
             $model->join('users', 'users.id = appointments.user_id', 'left');
+        }
+        if ($hasPaymentsTable) {
+            $model->join('payments', 'payments.appointment_id = appointments.id', 'left');
         }
 
         $userId = $this->currentUserId();
@@ -174,24 +265,37 @@ class AppointmentController extends BaseApiController
     private function findAppointment(int $id): ?array
     {
         $hasUsersTable = $this->hasUsersTable();
+        $hasPaymentsTable = $this->hasPaymentsTable();
         $model = (new AppointmentModel())
-            ->select($this->appointmentSelect($hasUsersTable))
+            ->select($this->appointmentSelect($hasUsersTable, $hasPaymentsTable))
             ->join('doctors', 'doctors.id = appointments.doctor_id', 'left')
             ->where('appointments.id', $id);
 
         if ($hasUsersTable) {
             $model->join('users', 'users.id = appointments.user_id', 'left');
         }
+        if ($hasPaymentsTable) {
+            $model->join('payments', 'payments.appointment_id = appointments.id', 'left');
+        }
 
         return $model->first();
     }
 
-    private function appointmentSelect(bool $hasUsersTable): string
+    private function appointmentSelect(bool $hasUsersTable, bool $hasPaymentsTable): string
     {
-        $select = 'appointments.*, doctors.name AS doctor_name, doctors.specialization, doctors.schedule';
+        $select = 'appointments.*, doctors.name AS doctor_name, doctors.specialization, doctors.photo AS doctor_photo, doctors.schedule';
 
         if ($hasUsersTable) {
             $select .= ', users.username AS patient_name';
+        }
+        if ($hasPaymentsTable) {
+            $select .= ', payments.status AS payment_status';
+            if ($this->safeFieldExists('proof', 'payments')) {
+                $select .= ', payments.proof AS payment_proof';
+            }
+            if ($this->safeFieldExists('bukti', 'payments')) {
+                $select .= ', payments.bukti AS payment_bukti';
+            }
         }
 
         return $select;
@@ -199,17 +303,25 @@ class AppointmentController extends BaseApiController
 
     private function hasUsersTable(): bool
     {
-        return db_connect()->tableExists('users');
+        return $this->safeTableExists('users');
+    }
+
+    private function hasPaymentsTable(): bool
+    {
+        return $this->safeTableExists('payments');
     }
 
     private function normalizeInput(array $input): array
     {
         $input['doctor_id'] = $input['doctor_id'] ?? $input['id_dokter'] ?? null;
-        $input['user_id'] = $input['user_id'] ?? $input['id_user'] ?? null;
+        $input['schedule_id'] = $input['schedule_id'] ?? $input['id_schedule'] ?? $input['jadwal_id'] ?? null;
         $input['date'] = $input['date'] ?? $input['tanggal'] ?? null;
         $input['time'] = $input['time'] ?? $input['jam'] ?? null;
         $input['keluhan'] = $input['keluhan'] ?? $input['complaint'] ?? null;
         $input['payment_method'] = $input['payment_method'] ?? $input['metode_pembayaran'] ?? null;
+        if ($input['payment_method'] === 'transfer') {
+            $input['payment_method'] = 'bank_transfer';
+        }
 
         return $input;
     }
@@ -242,6 +354,7 @@ class AppointmentController extends BaseApiController
             'complaint'        => $appointment['keluhan'] ?? '',
             'payment_method'   => $appointment['payment_method'] ?? null,
             'metode_pembayaran'=> $appointment['payment_method'] ?? null,
+            'payment_status'   => $appointment['payment_status'] ?? null,
             'total'            => (int) ($appointment['amount'] ?? 0),
             'doctor'           => [
                 'id'             => (int) ($appointment['doctor_id'] ?? 0),
@@ -249,9 +362,60 @@ class AppointmentController extends BaseApiController
                 'nama_dokter'    => $appointment['doctor_name'] ?? 'Dokter',
                 'specialization' => $appointment['specialization'] ?? '',
                 'specialty'      => $appointment['specialization'] ?? '',
+                'poli'           => $appointment['specialization'] ?? '',
+                'polyclinic'     => $appointment['specialization'] ?? '',
                 'practice_time'  => $appointment['schedule'] ?? '',
                 'jadwal_praktik' => $appointment['schedule'] ?? '',
+                'photo'          => $this->normalizePhotoUrl($appointment['doctor_photo'] ?? ''),
+                'photo_url'      => $this->normalizePhotoUrl($appointment['doctor_photo'] ?? ''),
             ],
         ]);
+    }
+
+    private function resolveSchedule(array &$input, int $doctorId): array|bool|null
+    {
+        if (! $this->safeTableExists('doctor_schedule')) {
+            return null;
+        }
+
+        $scheduleId = $input['schedule_id'] ?? null;
+        if ($scheduleId !== null && $scheduleId !== '') {
+            $schedule = (new DoctorScheduleModel())->find((int) $scheduleId);
+            if ($schedule === null || (int) ($schedule['doctor_id'] ?? 0) !== $doctorId) {
+                return false;
+            }
+            $input['schedule_id'] = (int) $scheduleId;
+            return $schedule;
+        }
+
+        return null;
+    }
+
+    private function scheduleDate(array $schedule): string
+    {
+        if (! empty($schedule['date'])) {
+            return (string) $schedule['date'];
+        }
+
+        return date('Y-m-d');
+    }
+
+    private function scheduleTime(array $schedule): string
+    {
+        return substr((string) ($schedule['start_time'] ?? $schedule['time'] ?? '08:00'), 0, 5);
+    }
+
+    private function bankConfig(): array
+    {
+        return [
+            'bank_name' => 'BCA',
+            'account_number' => '1234567890',
+            'account_name' => 'Klinik Mawon',
+        ];
+    }
+
+    private function paymentTable(): string
+    {
+        return $this->safeTableExists('payments') ? 'payments' : 'mobile_payments';
     }
 }

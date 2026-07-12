@@ -104,13 +104,18 @@ $routes->get('dokter/delete/(:num)', 'Admin\Doctors::delete/$1');
 // api admin doctor
 $routes->group('api', function($routes){
     $routes->options('(:any)', static function() {
-        return service('response')->setStatusCode(204);
+        return service('response')
+            ->setStatusCode(204)
+            ->setHeader('Access-Control-Allow-Origin', '*')
+            ->setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+            ->setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With')
+            ->setHeader('Access-Control-Max-Age', '7200');
     });
     $routes->post('login', 'Api\AuthController::login');
     $routes->post('register', 'Api\AuthController::register');
     $routes->post('logout', 'Api\AuthController::logout');
     $routes->get('profile', 'Api\ProfileController::show');
-    $routes->put('profile', 'Api\ProfileController::update');
+    $routes->match(['post', 'put'], 'profile', 'Api\ProfileController::update');
 });
 
 $routes->group('api', function($routes){
@@ -136,6 +141,8 @@ $routes->group('api', function($routes){
     $routes->post('bookings', 'Api\AppointmentController::create');
     $routes->put('bookings/(:num)', 'Api\AppointmentController::update/$1');
     $routes->delete('bookings/(:num)', 'Api\AppointmentController::cancel/$1');
+    $routes->get('bookings/(:num)/queue', 'Api\AppointmentController::queue/$1');
+    $routes->get('queue/(:num)', 'Api\AppointmentController::queue/$1');
 });
 
 // api payments alias untuk mobile
